@@ -33,6 +33,7 @@ const char* filename = "test.wav";
 File audioTrack;
 TMRpcm tmrpcm;
 
+// solved state
 bool isSolved = false;
 
 
@@ -69,58 +70,30 @@ void loop() {
   long yellowPulse = pulseIn(YellowWireInput, HIGH);
   long whitePulse = pulseIn(WhiteWireInput, HIGH);
 
-  Serial.print("Green Pulse: ");
-  Serial.print(greenPulse);
-  Serial.print(" Expected: ");
-  Serial.println(GreenWireExpectedPulseLength);
-  
-  Serial.print("Yellow Pulse: ");
-  Serial.print(yellowPulse);
-  Serial.print(" Expected: ");
-  Serial.println(YellowWireExpectedPulseLength);
-
-  Serial.print("Red Pulse: ");
-  Serial.print(redPulse);
-  Serial.print(" Expected: ");
-  Serial.println(RedWireExpectedPulseLength);
-
-  Serial.print("Blue Pulse: ");
-  Serial.print(bluePulse);
-  Serial.print(" Expected: ");
-  Serial.println(BlueWireExpectedPulseLength);
-
-  Serial.print("White Pulse: ");
-  Serial.print(whitePulse);
-  Serial.print(" Expected: ");
-  Serial.println(WhiteWireExpectedPulseLength);
-
-  Serial.println("-----------");
-  Serial.println();
-
+  // Check if puzzle is solved
   if (IsCorrectPulseLength(greenPulse, GreenWireExpectedPulseLength) && 
        IsCorrectPulseLength(redPulse, RedWireExpectedPulseLength) &&
        IsCorrectPulseLength(bluePulse, BlueWireExpectedPulseLength) &&
        IsCorrectPulseLength(yellowPulse, YellowWireExpectedPulseLength) &&
-       IsCorrectPulseLength(whitePulse, WhiteWireExpectedPulseLength)) {
-    if (!isSolved) {
-      PlayAudioClue();
-      delay(5000);
-      PlayAudioClue();
-    }
+       IsCorrectPulseLength(whitePulse, WhiteWireExpectedPulseLength) && 
+     !isSolved) {
+    PlayAudioClue();
+    delay(5000);
+    PlayAudioClue();
     isSolved = true;
    }
 }
 
+// Checks for the correct pulse length on a passed input pin
 bool IsCorrectPulseLength(long pulseLength, long expectedPulseLength) {
   return pulseLength <= expectedPulseLength + MarginOfError &&
     pulseLength >= expectedPulseLength - MarginOfError;
 }
 
-bool IsDisconnected(long pulseLength) {
-  return pulseLength == 0;
-}
 
+// Plays the audio clue to unlock the number lock
 void PlayAudioClue() {
+  delay(500);
   tmrpcm.play("tractor2.wav");
   delay(2000);
   tmrpcm.play("tractor2.wav");
